@@ -1,5 +1,7 @@
 # Tic-Tac-Toe Server
 
+This is a very simple implementation of a tic-tac-toe server. It allows two players to play tic-tac-toe via http requests.  
+
 ## Running the code
 
 The project uses pipenv for dependencies.  
