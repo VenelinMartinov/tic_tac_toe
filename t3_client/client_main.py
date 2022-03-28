@@ -85,7 +85,10 @@ def load_game_info(cache_file: pathlib.Path) -> Game:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Tic tac toe client")
+    parser = argparse.ArgumentParser(
+        description="Tic tac toe client. "
+        "The game id, url and player tokens are saved in a local file."
+    )
     parser.add_argument("--cache-location", type=str, default=CLIENT_CACHE_FILENAME)
     subparsers = parser.add_subparsers(dest="subparser_name")
 
@@ -99,7 +102,7 @@ def main() -> None:
     join_parser.add_argument(
         "--url", default="http://localhost:8000", help="server url"
     )
-    join_parser.add_argument("--name", required=True)
+    join_parser.add_argument("--name", required=True, help="player name")
     join_parser.add_argument("--game-id", required=True)
 
     state_parser = subparsers.add_parser("state")

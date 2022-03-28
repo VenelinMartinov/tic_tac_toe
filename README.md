@@ -1,6 +1,8 @@
 # Tic-Tac-Toe Server
 
-This is a very simple implementation of a tic-tac-toe server. It allows two players to play tic-tac-toe via http requests.  
+This is a very simple implementation of a tic-tac-toe server and client. It allows two players to play tic-tac-toe via http requests.  
+Refer to the client `python t3_client/client_main.py --help` for instructions on how to use it.  
+Note that this was done in a few hours so is still in a rough state.
 
 ## Running the code
 
