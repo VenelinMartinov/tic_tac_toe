@@ -13,6 +13,7 @@ black = "*"
 mypy = "*"
 pytest = "*"
 requests = "*"
+types-requests = "*"
 
 [requires]
 python_version = "3.9"

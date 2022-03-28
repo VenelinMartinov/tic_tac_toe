@@ -97,7 +97,7 @@ def validate_token(token: uuid.UUID, game: game_state.GameState) -> bool:
     return True
 
 
-def validate_player_turn(token: uuid.UUID, game: game_state.GameState) -> None:
+def validate_player_turn(token: uuid.UUID, game: game_state.GameState) -> bool:
     second_player = game.second_player
     if (game.current_turn_first_player and token != game.first_player.token) or (
         second_player is not None
