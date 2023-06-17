@@ -1,3 +1,29 @@
+[tool.poetry]
+name = "tic-tac-toe"
+version = "0.1.0"
+description = ""
+authors = ["Venelin Martinov <venelin.v.martinov@gmail.com>"]
+readme = "README.md"
+packages = [{include = "tic_tac_toe"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "*"
+uvicorn = "*"
+python-multipart = "^0.0.6"
+pillow = "^9.5.0"
+types-pillow = "^9.5.0.4"
+pytesseract = "^0.3.10"
+httpx = "^0.24.1"
+
+[tool.poetry.dev-dependencies]
+black = "*"
+mypy = "*"
+pytest = "*"
+requests = "*"
+types-requests = "*"
+
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

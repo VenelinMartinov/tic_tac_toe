@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Optional
 import dataclasses
 import enum
@@ -9,10 +10,19 @@ class InvalidTurn(Exception):
     pass
 
 
-class Symbols(enum.Enum):
+class Symbol(enum.Enum):
     X = "X"
     O = "O"
     EMPTY = "_"
+
+    @staticmethod
+    def from_char(char: str) -> Symbol:
+        stripped = char.strip()
+        if stripped in "oO0":
+            return Symbol.O
+        if stripped in "xX":
+            return Symbol.X
+        return Symbol.EMPTY
 
 
 @dataclasses.dataclass
@@ -28,7 +38,7 @@ class Player:
 @dataclasses.dataclass
 class GameState:
     game_id: uuid.UUID
-    game_state: list[list[Symbols]]
+    game_state: list[list[Symbol]]
     first_player: Player
     current_turn_first_player: bool
     first_player_starts: bool
@@ -38,7 +48,7 @@ class GameState:
 
     def __init__(self, game_id: uuid.UUID, first_player_name: str) -> None:
         self.game_id = game_id
-        self.game_state = [[Symbols.EMPTY] * 3 for _ in range(3)]
+        self.game_state = [[Symbol.EMPTY] * 3 for _ in range(3)]
         self.first_player = Player(name=first_player_name)
         self.first_player_starts = random.choice([True, False])
         self.current_turn_first_player = self.first_player_starts
@@ -47,9 +57,9 @@ class GameState:
         self.second_player = Player(player_name)
         return self.second_player
 
-    def _is_winning_move(self, row: int, column: int) -> bool:
+    def _is_winning_move(self, *, row: int, column: int) -> bool:
         current_play = self.game_state[row][column]
-        assert current_play != Symbols.EMPTY
+        assert current_play != Symbol.EMPTY
         column_win = all(self.game_state[row][i] == current_play for i in range(3))
         row_win = all(self.game_state[i][column] == current_play for i in range(3))
         left_diag_win = (column == row) and all(
@@ -60,22 +70,22 @@ class GameState:
         )
         return column_win or row_win or left_diag_win or right_diag_win
 
-    def play_turn(self, column: int, row: int) -> Optional[Player]:
-        if self.game_state[row][column] != Symbols.EMPTY:
+    def play_turn(self, *, row: int, column: int) -> Optional[Player]:
+        if self.game_state[row][column] != Symbol.EMPTY:
             raise InvalidTurn
 
         current_play = (
-            Symbols.X
+            Symbol.X
             if (
                 (self.first_player_starts and self.current_turn_first_player)
                 or (not self.first_player_starts and not self.current_turn_first_player)
             )
-            else Symbols.O
+            else Symbol.O
         )
         self.game_state[row][column] = current_play
         self.turns_played += 1
 
-        if self._is_winning_move(row, column):
+        if self._is_winning_move(row=row, column=column):
             self.winner = (
                 self.first_player
                 if self.current_turn_first_player

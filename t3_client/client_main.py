@@ -2,6 +2,7 @@
 import dataclasses
 import argparse
 import pathlib
+from typing import Optional
 
 import requests
 
@@ -37,7 +38,7 @@ class Game:
             json={"player_token": self.player_token, "row": row, "column": column},
         )
         response.raise_for_status()
-        json_response: dict[str, str] = response.json()
+        json_response: Optional[dict[str, str]] = response.json()
         if json_response is not None:
             result = json_response.get("result", None)
             if result == "draw":
@@ -104,8 +105,6 @@ def main() -> None:
     )
     join_parser.add_argument("--name", required=True, help="player name")
     join_parser.add_argument("--game-id", required=True)
-
-    state_parser = subparsers.add_parser("state")
 
     turn_parser = subparsers.add_parser("turn", help="play a turn")
     turn_parser.add_argument("row", type=int)

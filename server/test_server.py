@@ -1,10 +1,8 @@
-from typing import Tuple
 import uuid
 import pytest
-import fastapi
 from fastapi import testclient
 
-from server import server_main, game_state
+from server import dependencies, server_main, game_state
 
 
 @pytest.fixture
@@ -19,10 +17,10 @@ def game() -> game_state.GameState:
     games[game_id].first_player_starts = True
     games[game_id].current_turn_first_player = True
 
-    def return_games() -> server_main.GamesDict:
+    def return_games() -> dependencies.GamesDict:
         return games
 
-    server_main.app.dependency_overrides[server_main.get_active_games] = return_games
+    server_main.app.dependency_overrides[dependencies.get_active_games] = return_games
     return games[game_id]
 
 

@@ -1,3 +1,6 @@
 *.egg-info
 build
 .vscode
+.mypy_cache
+.pytest_cache
+*pycache*

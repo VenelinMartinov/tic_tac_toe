@@ -19,20 +19,20 @@ def test_draw(game: game_state.GameState) -> None:
 
 def test_play_winning_turn(game: game_state.GameState) -> None:
     game.game_state = [
-        [game_state.Symbols.X, game_state.Symbols.O, game_state.Symbols.O],
-        [game_state.Symbols.X, game_state.Symbols.O, game_state.Symbols.EMPTY],
-        [game_state.Symbols.EMPTY, game_state.Symbols.EMPTY, game_state.Symbols.EMPTY],
+        [game_state.Symbol.X, game_state.Symbol.O, game_state.Symbol.O],
+        [game_state.Symbol.X, game_state.Symbol.O, game_state.Symbol.EMPTY],
+        [game_state.Symbol.EMPTY, game_state.Symbol.EMPTY, game_state.Symbol.EMPTY],
     ]
 
-    winner = game.play_turn(2, 0)
+    winner = game.play_turn(row=2, column=0)
     assert winner == game.first_player
 
 
 def test_random_play_doesnt_win(game: game_state.GameState) -> None:
     game.game_state = [
-        [game_state.Symbols.EMPTY, game_state.Symbols.EMPTY, game_state.Symbols.EMPTY],
-        [game_state.Symbols.EMPTY, game_state.Symbols.EMPTY, game_state.Symbols.EMPTY],
-        [game_state.Symbols.EMPTY, game_state.Symbols.EMPTY, game_state.Symbols.EMPTY],
+        [game_state.Symbol.EMPTY, game_state.Symbol.EMPTY, game_state.Symbol.EMPTY],
+        [game_state.Symbol.EMPTY, game_state.Symbol.EMPTY, game_state.Symbol.EMPTY],
+        [game_state.Symbol.EMPTY, game_state.Symbol.EMPTY, game_state.Symbol.EMPTY],
     ]
-    winner = game.play_turn(1, 1)
+    winner = game.play_turn(row=1, column=1)
     assert winner is None

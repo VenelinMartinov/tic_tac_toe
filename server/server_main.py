@@ -3,20 +3,14 @@ import uuid
 import fastapi
 import pydantic
 
-from server import game_state
+from server import game_state, image_router
+from server.dependencies import GamesDict, get_active_games
 
 PLAYER_NAME_MAX_LENGTH = 100
 TOKEN_LENGTH = 16
 
 app = fastapi.FastAPI()
-
-GamesDict = dict[uuid.UUID, game_state.GameState]
-
-ALL_GAMES: GamesDict = {}
-
-
-def get_active_games() -> GamesDict:
-    return ALL_GAMES
+app.include_router(image_router.image_router)
 
 
 class NewGameBody(pydantic.BaseModel):
@@ -24,7 +18,7 @@ class NewGameBody(pydantic.BaseModel):
 
 
 @app.post("/new_game")
-async def new_game(
+def new_game(
     body: NewGameBody, active_games: GamesDict = fastapi.Depends(get_active_games)
 ) -> Any:
     new_game_uid = uuid.uuid4()
@@ -38,7 +32,7 @@ async def new_game(
 
 
 @app.get("/{game_id}")
-async def get_game_state(
+def get_game_state(
     game_id: uuid.UUID, active_games: GamesDict = fastapi.Depends(get_active_games)
 ) -> Any:
     try:
@@ -63,7 +57,7 @@ class JoinGameBody(pydantic.BaseModel):
 
 
 @app.post("/{game_id}/join")
-async def join_game(
+def join_game(
     game_id: uuid.UUID,
     body: JoinGameBody,
     active_games: GamesDict = fastapi.Depends(get_active_games),
@@ -115,7 +109,7 @@ class PlayTurnBody(pydantic.BaseModel):
 
 
 @app.post("/{game_id}/play_turn")
-async def play_turn(
+def play_turn(
     game_id: uuid.UUID,
     body: PlayTurnBody,
     active_games: GamesDict = fastapi.Depends(get_active_games),
@@ -138,7 +132,7 @@ async def play_turn(
         )
 
     try:
-        winner = current_game.play_turn(body.column, body.row)
+        winner = current_game.play_turn(column=body.column, row=body.row)
     except game_state.InvalidTurn:
         raise fastapi.exceptions.HTTPException(
             status_code=fastapi.status.HTTP_400_BAD_REQUEST, detail="Invalid turn"
