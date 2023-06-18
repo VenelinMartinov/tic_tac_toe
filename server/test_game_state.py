@@ -24,7 +24,7 @@ def test_play_winning_turn(game: game_state.GameState) -> None:
         [game_state.Symbol.EMPTY, game_state.Symbol.EMPTY, game_state.Symbol.EMPTY],
     ]
 
-    winner = game.play_turn(row=2, column=0)
+    winner = game.play_turn(game_state.Move(row=2, col=0))
     assert winner == game.first_player
 
 
@@ -34,5 +34,5 @@ def test_random_play_doesnt_win(game: game_state.GameState) -> None:
         [game_state.Symbol.EMPTY, game_state.Symbol.EMPTY, game_state.Symbol.EMPTY],
         [game_state.Symbol.EMPTY, game_state.Symbol.EMPTY, game_state.Symbol.EMPTY],
     ]
-    winner = game.play_turn(row=1, column=1)
+    winner = game.play_turn(game_state.Move(row=1, col=1))
     assert winner is None

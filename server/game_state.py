@@ -18,11 +18,17 @@ class Symbol(enum.Enum):
     @staticmethod
     def from_char(char: str) -> Symbol:
         stripped = char.strip()
-        if stripped in "oO0":
+        if stripped in ["o", "O"]:
             return Symbol.O
-        if stripped in "xX":
+        if stripped in ["x", "X"]:
             return Symbol.X
         return Symbol.EMPTY
+
+
+@dataclasses.dataclass
+class Move:
+    row: int
+    col: int
 
 
 @dataclasses.dataclass
@@ -33,6 +39,10 @@ class Player:
     def __init__(self, name: str) -> None:
         self.name = name
         self.token = uuid.uuid4()
+
+
+class InvalidGameStateRequested(Exception):
+    pass
 
 
 @dataclasses.dataclass
@@ -57,21 +67,21 @@ class GameState:
         self.second_player = Player(player_name)
         return self.second_player
 
-    def _is_winning_move(self, *, row: int, column: int) -> bool:
-        current_play = self.game_state[row][column]
+    def _is_winning_move(self, move: Move) -> bool:
+        current_play = self.game_state[move.row][move.col]
         assert current_play != Symbol.EMPTY
-        column_win = all(self.game_state[row][i] == current_play for i in range(3))
-        row_win = all(self.game_state[i][column] == current_play for i in range(3))
-        left_diag_win = (column == row) and all(
+        column_win = all(self.game_state[move.row][i] == current_play for i in range(3))
+        row_win = all(self.game_state[i][move.col] == current_play for i in range(3))
+        left_diag_win = (move.col == move.row) and all(
             self.game_state[i][i] == current_play for i in range(3)
         )
-        right_diag_win = (column + row == 2) and all(
+        right_diag_win = (move.col + move.row == 2) and all(
             self.game_state[i][2 - i] == current_play for i in range(3)
         )
         return column_win or row_win or left_diag_win or right_diag_win
 
-    def play_turn(self, *, row: int, column: int) -> Optional[Player]:
-        if self.game_state[row][column] != Symbol.EMPTY:
+    def play_turn(self, move: Move) -> Optional[Player]:
+        if self.game_state[move.row][move.col] != Symbol.EMPTY:
             raise InvalidTurn
 
         current_play = (
@@ -82,10 +92,10 @@ class GameState:
             )
             else Symbol.O
         )
-        self.game_state[row][column] = current_play
+        self.game_state[move.row][move.col] = current_play
         self.turns_played += 1
 
-        if self._is_winning_move(row=row, column=column):
+        if self._is_winning_move(move):
             self.winner = (
                 self.first_player
                 if self.current_turn_first_player
@@ -98,3 +108,15 @@ class GameState:
     @property
     def is_drawn(self) -> bool:
         return self.turns_played == 9 and self.winner is None
+
+    def get_move_difference(self, board: list[list[Symbol]]) -> Move | None:
+        move = None
+        for row in range(3):
+            for col in range(3):
+                if board[row][col] != self.game_state[row][col]:
+                    if move is not None:
+                        raise InvalidGameStateRequested(
+                            f"more than one move difference {board} {self.game_state}"
+                        )
+                    move = Move(row=row, col=col)
+        return move

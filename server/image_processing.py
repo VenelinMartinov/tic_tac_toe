@@ -1,12 +1,11 @@
-import fastapi
+from typing import BinaryIO
 from PIL import Image
 import pytesseract
 
 from server.game_state import Symbol
 
-image_router = fastapi.APIRouter(prefix="/image")
 
-BORDER_CROP = 10 / 100
+BORDER_CROP = 5 / 100
 
 
 def crop_cell(image: Image.Image, *, row: int, col: int) -> Image.Image:
@@ -23,13 +22,12 @@ def crop_cell(image: Image.Image, *, row: int, col: int) -> Image.Image:
 
 
 def get_char_from_image(image: Image.Image) -> Symbol:
-    char= str(pytesseract.image_to_string(image, config="--psm 10", lang="eng"))
+    char = str(pytesseract.image_to_string(image, config="--psm 10", lang="eng"))
     return Symbol.from_char(char)
 
 
-@image_router.post("/play_turn")
-def image_play_turn(file: fastapi.UploadFile) -> None:
-    with Image.open(file.file) as uploaded_image:
+def get_board_from_file(file: BinaryIO) -> list[list[Symbol]]:
+    with Image.open(file) as uploaded_image:
         image_array: list[list[Symbol]] = []
         for row in range(3):
             column_array: list[Symbol] = []
@@ -37,4 +35,4 @@ def image_play_turn(file: fastapi.UploadFile) -> None:
                 cell = crop_cell(uploaded_image, row=row, col=col)
                 column_array.append(get_char_from_image(cell))
             image_array.append(column_array)
-    print(image_array)
+    return image_array
