@@ -32,11 +32,8 @@ class Game:
         for line in json_response["game_state"]:
             print(line)
 
-    def play_turn(self, row: int, column: int) -> None:
-        response = requests.post(
-            self.url + f"/{self.game_id}/play_turn",
-            json={"player_token": self.player_token, "row": row, "column": column},
-        )
+
+    def _handle_turn_response(self, response: requests.Response) -> None:
         response.raise_for_status()
         json_response: Optional[dict[str, str]] = response.json()
         if json_response is not None:
@@ -48,6 +45,24 @@ class Game:
                 winner = json_response.get("winner")
                 self.print_game_state()
                 print(f"{winner} won the game")
+
+    def play_turn(self, row: int, column: int) -> None:
+        response = requests.post(
+            self.url + f"/{self.game_id}/play_turn",
+            headers={"x-player-token": self.player_token},
+            json={"row": row, "column": column},
+        )
+        self._handle_turn_response(response)
+        
+
+    def play_image_turn(self, image_file: pathlib.Path) -> None:
+        with open(image_file, "rb") as opened_file:
+            response = requests.post(
+                self.url + f"/{self.game_id}/play_turn_image",
+            headers={"x-player-token": self.player_token},
+                files={"image_file": opened_file},
+            )
+        self._handle_turn_response(response)
 
 
 def handle_game_response(url: str, response: requests.Response) -> Game:
@@ -110,6 +125,11 @@ def main() -> None:
     turn_parser.add_argument("row", type=int)
     turn_parser.add_argument("column", type=int)
 
+    state_parser = subparsers.add_parser("state", help="print game state")
+
+    image_turn_parser = subparsers.add_parser("image-turn", help="play an image turn")
+    image_turn_parser.add_argument("image", type=pathlib.Path)
+
     args = parser.parse_args()
 
     CACHE_FILE = pathlib.Path(args.cache_location)
@@ -132,6 +152,9 @@ def main() -> None:
 
     if args.subparser_name == "turn":
         game.play_turn(args.row, args.column)
+
+    if args.subparser_name == "image-turn":
+        game.play_image_turn(args.image)
 
 
 if __name__ == "__main__":

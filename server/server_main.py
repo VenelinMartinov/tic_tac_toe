@@ -129,7 +129,6 @@ class PlayTurnBody(pydantic.BaseModel):
 
 @app.post("/{game_id}/play_turn")
 def play_turn(
-    request: fastapi.Request,
     body: PlayTurnBody,
     x_player_token: str = fastapi.Header(default=None),
     current_game: game_state.GameState = fastapi.Depends(get_current_game),
