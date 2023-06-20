@@ -8,6 +8,8 @@ The project uses poetry for dependencies.
 Instructions for installing [here](https://python-poetry.org/docs/#installation).  
 `poetry install` to install the required packages. 
 
+You'll also need [tesseract](https://github.com/tesseract-ocr/tesseract#installing-tesseract) for OCR.
+
 `poetry run uvicorn server.server_main:app` to run the server.  
 
 ## Playing
