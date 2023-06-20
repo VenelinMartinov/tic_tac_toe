@@ -20,7 +20,7 @@ class Symbol(enum.Enum):
         stripped = char.strip()
         if stripped in ["o", "O"]:
             return Symbol.O
-        if stripped in ["x", "X"]:
+        if stripped in ["x", "X", "4"]:
             return Symbol.X
         return Symbol.EMPTY
 

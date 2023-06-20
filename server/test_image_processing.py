@@ -10,3 +10,13 @@ def test_image() -> None:
         [Symbol.X, Symbol.O, Symbol.EMPTY],
         [Symbol.X, Symbol.EMPTY, Symbol.EMPTY],
     ]
+
+
+def test_hand_drawn() -> None:
+    with open("hand_drawn.jpg", "rb") as image_file:
+        board = get_board_from_file(image_file)
+    assert board == [
+        [Symbol.X, Symbol.O, Symbol.EMPTY],
+        [Symbol.X, Symbol.O, Symbol.EMPTY],
+        [Symbol.X, Symbol.EMPTY, Symbol.EMPTY],
+    ]
